@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const User = require('../modals/user');
+const User = require("../modals/user");
 
 function generateToken(id, name) {
   return jwt.sign({ userId: id, name }, process.env.TOKEN_SECRET);
@@ -11,13 +11,18 @@ const createUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    const existingEmail = await User.findOne({ where: { email } });
+    if(existingEmail){
+      return res.status(409).json({success: false, message: 'Email already exists'});
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = User.create({ name, email, password: hashedPassword });
     res.status(200).json({
       success: true,
       user: user,
-      tokne: generateToken(user.id, user.name),
+      token: generateToken(user.id, user.name),
     });
   } catch (err) {
     res
@@ -47,7 +52,7 @@ const validateUser = async (req, res) => {
         .json({ success: false, message: "Incorrect Passowrd" });
     }
 
-    res.status(200).json({ success: true, user: existingUser });
+    res.status(200).json({ success: true, user: existingUser, token: generateToken(existingUser.id, existingUser.name), });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
@@ -69,7 +74,7 @@ const getUser = async (req, res) => {
 };
 
 module.exports = {
-    createUser,
-    validateUser,
-    getUser
-}
+  createUser,
+  validateUser,
+  getUser,
+};
