@@ -1,0 +1,40 @@
+.compose-mail {
+  max-width: 600px;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.editor-wrapper {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  min-height: 200px;
+  background-color: #f8f9fa;
+}
+
+.demo-wrapper {
+  border-radius: 4px;
+}
+
+.demo-editor {
+  background-color: #fff;
+}
+
+.compose-mail button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+@media (min-width: 992px) {
+  .compose-mail {
+    max-width: 700px;
+    margin-top: 10px;
+    margin-left: 280px;
+  }
+}
