@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { EditorState, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -11,6 +12,10 @@ const ComposeMail = () => {
   const [bcc, setBcc] = useState("");
   const [subject, setSubject] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    setToken(localStorage.getItem('token'));
+  }, [])
 
   const handleSendMail = async () => {
     const mailBody = JSON.stringify(
@@ -25,12 +30,17 @@ const ComposeMail = () => {
     };
     console.log(data);
 
-    // try {
-    //   await axios.post("/api/sendMail", data);
-    //   alert("Mail sent successfully");
-    // } catch (error) {
-    //   console.error("Error sending mail:", error);
-    // }
+    try {
+      await axios.post("http://localhost:3001/api/email/send-email", data, {
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+      alert("Mail sent successfully");
+    } catch (error) {
+      console.error("Error sending mail:", error);
+    }
   };
 
   return (
