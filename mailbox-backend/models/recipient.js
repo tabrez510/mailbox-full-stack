@@ -16,10 +16,10 @@ const Recipient = sequelize.define("recipient", {
   }
 });
 
-Recipient.belongsTo(User);
-Recipient.belongsTo(Email);
+Recipient.belongsTo(User, { as: 'RecipientUser', foreignKey: 'userId' });
+Recipient.belongsTo(Email, { as: 'Email', foreignKey: 'emailId' });
 
-User.hasMany(Recipient);
-Email.hasMany(Recipient);
+User.hasMany(Recipient, { as: 'ReceivedEmails', foreignKey: 'userId' });
+Email.hasMany(Recipient, { as: 'Recipients', foreignKey: 'emailId' });
 
 module.exports = Recipient;

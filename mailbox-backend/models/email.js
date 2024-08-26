@@ -23,7 +23,7 @@ const Email = sequelize.define("email", {
   },
 });
 
-Email.belongsTo(User);
-User.hasMany(Email);
+Email.belongsTo(User, { as: 'Sender', foreignKey: 'userId' });
+User.hasMany(Email, { as: 'SentEmails', foreignKey: 'userId' });
 
 module.exports = Email;
