@@ -12,9 +12,9 @@ const app = express();
 // app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
 app.use(bodyParser.json());
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World</>')
-})
+// app.get('/', (req, res) => {
+//   res.send('<h1>Hello World</>')
+// })
 
 app.use("/api/user", userRoutes);
 app.use("/api/email", emailRoutes);

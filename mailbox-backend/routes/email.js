@@ -9,5 +9,6 @@ router.get('/sent', userAuth.authenticate, emailControllers.getSentEmails);
 router.get('/received', userAuth.authenticate, emailControllers.getReceivedEmails);
 router.get('/received/:emailId', userAuth.authenticate, emailControllers.getReceivedEmailDetails);
 router.get('/sent/:emailId', userAuth.authenticate, emailControllers.getSentEmailDetails);
+router.delete('/delete/:emailId', userAuth.authenticate, emailControllers.deleteEmail)
 
 module.exports = router;

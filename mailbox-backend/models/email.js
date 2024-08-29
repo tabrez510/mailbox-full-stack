@@ -17,6 +17,10 @@ const Email = sequelize.define("email", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  isDeleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

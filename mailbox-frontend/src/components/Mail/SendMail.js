@@ -8,8 +8,6 @@ import "./SendMail.css"
 
 const ComposeMail = () => {
   const [recipients, setRecipients] = useState("");
-  const [cc, setCc] = useState("");
-  const [bcc, setBcc] = useState("");
   const [subject, setSubject] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [token, setToken] = useState(null);
@@ -23,20 +21,20 @@ const ComposeMail = () => {
     );
     const data = {
       recipients: recipients.split(",").map((email) => email.trim()),
-      cc: cc.split(",").map((email) => email.trim()),
-      bcc: bcc.split(",").map((email) => email.trim()),
       subject,
       body: mailBody,
     };
-    console.log(data);
 
     try {
-      await axios.post("http://localhost:3001/api/email/send-email", data, {
+      await axios.post("http://localhost:3001/api/email/send", data, {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json'
         }
       });
+      setRecipients("");
+      setSubject("");
+      setEditorState(EditorState.createEmpty());
       alert("Mail sent successfully");
     } catch (error) {
       console.error("Error sending mail:", error);
@@ -53,22 +51,7 @@ const ComposeMail = () => {
           onChange={(e) => setRecipients(e.target.value)}
         />
       </FloatingLabel>
-      <FloatingLabel controlId="floatingCc" label="CC" className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="CC"
-          value={cc}
-          onChange={(e) => setCc(e.target.value)}
-        />
-      </FloatingLabel>
-      <FloatingLabel controlId="floatingBcc" label="BCC" className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="BCC"
-          value={bcc}
-          onChange={(e) => setBcc(e.target.value)}
-        />
-      </FloatingLabel>
+      
       <FloatingLabel
         controlId="floatingSubject"
         label="Subject"

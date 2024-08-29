@@ -4,7 +4,7 @@ const Recipient = require("../models/recipient");
 const moment = require("moment-timezone");
 
 const sendEmail = async (req, res) => {
-  const { recipients, cc, bcc, subject, body } = req.body;
+  const { recipients, subject, body } = req.body;
 
   try {
     const email = await Email.create({
@@ -13,39 +13,30 @@ const sendEmail = async (req, res) => {
       userId: req.user.id,
     });
 
-    const allRecipients = [...new Set([...recipients, ...cc, ...bcc])];
+    const allRecipients = [...new Set([...recipients])];
 
     for (const recipientEmail of allRecipients) {
       const recipientUser = await User.findOne({
         where: { email: recipientEmail },
       });
       if (recipientUser) {
-        let type = "TO";
-        if (cc.includes(recipientEmail)) {
-          type = "CC";
-        } else if (bcc.includes(recipientEmail)) {
-          type = "BCC";
-        }
-
         await Recipient.create({
           emailId: email.id,
           userId: recipientUser.id,
-          type,
         });
       }
     }
 
-    res.status(200).send("Mail sent successfully");
+    res.status(200).json({ success: true, message: "Mail sent successfully" });
   } catch (error) {
-    console.error("Error sending mail:", error);
-    res.status(500).send("Error sending mail");
+    res.status(500).json({ success: false, message: "Error sending mail" });
   }
 };
 
 const getSentEmails = async (req, res) => {
   try {
     const sentEmails = await Email.findAll({
-      where: { userId: req.user.id },
+      where: { userId: req.user.id, isDeleted: false },
       include: [
         {
           model: User,
@@ -55,7 +46,6 @@ const getSentEmails = async (req, res) => {
         {
           model: Recipient,
           as: "Recipients",
-          where: { type: "TO" },
           include: {
             model: User,
             as: "RecipientUser",
@@ -65,7 +55,7 @@ const getSentEmails = async (req, res) => {
       ],
     });
     const emails = sentEmails.map((email) => ({
-      emailId: id,
+      emailId: email.id,
       subject: email.subject,
       to: email.Recipients.map(
         (recipient) => recipient.RecipientUser.name
@@ -85,7 +75,7 @@ const getReceivedEmails = async (req, res) => {
     const userId = req.user.id;
 
     const receivedEmails = await Recipient.findAll({
-      where: { userId },
+      where: { userId, isDeleted: false },
       include: [
         {
           model: Email,
@@ -95,12 +85,13 @@ const getReceivedEmails = async (req, res) => {
           ],
         },
       ],
-      attributes: ["emailId", "createdAt"],
+      attributes: ["emailId", "isSeen" , "createdAt"],
     });
 
     const emails = receivedEmails.map((recipient) => ({
       emailId: recipient.emailId,
       subject: recipient.Email.subject,
+      isSeen: recipient.isSeen,
       from: recipient.Email.Sender.name,
       date: moment.tz(recipient.createdAt, "Asia/Kolkata").format("DD/MM/YY"),
       time: moment.tz(recipient.createdAt, "Asia/Kolkata").format("hh:mm A"),
@@ -118,7 +109,7 @@ const getReceivedEmailDetails = async (req, res) => {
 
   try {
     const email = await Email.findOne({
-      where: { id: emailId },
+      where: { id: emailId, isDeleted: false },
       include: [
         {
           model: User,
@@ -143,15 +134,17 @@ const getReceivedEmailDetails = async (req, res) => {
         .json({ success: false, message: "Email not found" });
     }
 
-    const isRecipient = email.Recipients.some(
-      (recipient) => recipient.RecipientUser.id === parseInt(userId)
+    const recipient = email.Recipients.find(
+      (rec) => rec.userId === userId
     );
 
-    if (!isRecipient) {
+    if (!recipient) {
       return res
         .status(403)
         .json({ success: false, message: "Unauthorized access" });
     }
+    recipient.isSeen = true;
+    await recipient.save();
 
     const sender = {
       name: email.Sender.name,
@@ -174,7 +167,7 @@ const getReceivedEmailDetails = async (req, res) => {
         subject: email.subject,
         body: email.body,
         date,
-        time,
+        time
       },
     });
   } catch (error) {
@@ -189,27 +182,29 @@ const getSentEmailDetails = async (req, res) => {
 
   try {
     const email = await Email.findOne({
-      where: { id: emailId, userId },
+      where: { id: emailId, userId, isDeleted: false },
       include: [
         {
           model: User,
-          as: 'Sender',
-          attributes: ['name', 'email'],
+          as: "Sender",
+          attributes: ["name", "email"],
         },
         {
           model: Recipient,
-          as: 'Recipients',
+          as: "Recipients",
           include: {
             model: User,
-            as: 'RecipientUser',
-            attributes: ['name', 'email'],
+            as: "RecipientUser",
+            attributes: ["name", "email"],
           },
         },
       ],
     });
 
     if (!email) {
-      return res.status(404).json({ success: false, message: 'Email not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Email not found" });
     }
 
     const sender = {
@@ -242,11 +237,63 @@ const getSentEmailDetails = async (req, res) => {
   }
 };
 
+const deleteEmail = async (req, res) => {
+  const { emailId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const email = await Email.findOne({
+      where: { id: emailId },
+      include: [
+        {
+          model: Recipient,
+          as: "Recipients",
+        },
+      ],
+    });
+
+    if (!email) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Email not found" });
+    }
+
+    if (email.userId === userId) {
+      await email.update({ isDeleted: true });
+      return res
+        .status(200)
+        .json({ success: true, message: "Email marked as deleted" });
+    }
+
+    const recipient = await Recipient.findOne({
+      where: { emailId, userId },
+    });
+
+    if (recipient) {
+      await recipient.update({ isDeleted: true });
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: "Email marked as deleted for recipient",
+        });
+    }
+
+    res
+      .status(403)
+      .json({ success: false, message: "Unauthorized to delete this email" });
+  } catch (error) {
+    console.error("Error deleting email:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 module.exports = {
   sendEmail,
   getSentEmails,
   getReceivedEmails,
   getReceivedEmailDetails,
-  getSentEmailDetails
+  getSentEmailDetails,
+  deleteEmail
 };

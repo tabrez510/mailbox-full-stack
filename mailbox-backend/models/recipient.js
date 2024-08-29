@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/database");
-const Email = require("./email"); // Changed from './user' to './email'
+const Email = require("./email");
 const User = require("./user");
 
 const Recipient = sequelize.define("recipient", {
@@ -10,9 +10,13 @@ const Recipient = sequelize.define("recipient", {
     allowNull: false,
     primaryKey: true,
   },
-  type: {
-    type: DataTypes.ENUM("TO", "CC", "BCC"),
-    allowNull: false,
+  isDeleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  isSeen: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 });
 
