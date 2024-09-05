@@ -9,10 +9,11 @@ import {
   sendMailAction,
 } from './mailActions';
 
+const initialSelectedMail = { sender:{ name: "", email: ""}, recipients: [], subject: "", body: "", date: "", time: "" }
 const initialState = {
   sentMails: [],
   receivedMails: [],
-  selectedMail: null,
+  selectedMail: initialSelectedMail,
   loading: false,
   error: null,
   sendMailSuccess: false,
@@ -28,6 +29,14 @@ const mailSlice = createSlice({
     resetSendMailSuccess(state) {
       state.sendMailSuccess = false;
     },
+    logOut(state) {
+      state.sentMails = [];
+      state.receivedMails = [];
+      state.selectedMail = initialSelectedMail;
+      state.loading = false;
+      state.error = null;
+      state.sendMailSuccess = false;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -118,6 +127,6 @@ const mailSlice = createSlice({
   },
 });
 
-export const { clearSelectedMail, resetSendMailSuccess } = mailSlice.actions;
+export const { clearSelectedMail, resetSendMailSuccess, logOut} = mailSlice.actions;
 
 export default mailSlice.reducer;

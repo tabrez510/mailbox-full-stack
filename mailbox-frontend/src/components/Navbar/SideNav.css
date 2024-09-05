@@ -4,7 +4,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  background-color: #f8f9fa;
+  background-color: #C7FFD8;
   padding-top: 20px;
   overflow: auto;
 }
@@ -18,4 +18,10 @@
 .nav-link {
   font-size: 1.1rem;
   margin: 10px 0;
+}
+.active-link {
+  background-color: #161D6F !important;
+  color: #fff !important;
+  font-weight: bold;
+  border-radius: 4px;
 }

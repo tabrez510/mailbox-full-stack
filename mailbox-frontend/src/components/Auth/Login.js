@@ -32,7 +32,7 @@ const Login = () => {
     await dispatch(loginUser({ email: enteredEmail, password: enteredPassword }));
     emailInputRef.current.value = "";
     passwordInputRef.current.value = "";
-    // navigate("/dashboard");
+    navigate("/received-mail");
   };
 
 

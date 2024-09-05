@@ -4,10 +4,12 @@ import {
   fetchSentMailsAction,
   fetchReceivedMailsAction,
 } from "../../features/mail/mailActions";
+import {useNavigate} from "react-router-dom";
 import MailList from "./MailList";
 
 const MailPage = ({ type }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const mails = useSelector((state) =>
     type === "sent" ? state.mail.sentMails : state.mail.receivedMails
   );
@@ -21,8 +23,7 @@ const MailPage = ({ type }) => {
   }, [dispatch, type]);
 
   const handleMailClick = (mailId) => {
-    // Handle click to show mail details or mark as seen
-    console.log(`Mail clicked with ID: ${mailId}`);
+    navigate(`${type === "sent" ? "/sent-mail" : "/received-mail"}/${mailId}`);
   };
 
   return (

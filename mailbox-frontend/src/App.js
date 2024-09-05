@@ -4,6 +4,8 @@ import SignupPage from "./pages/signupPage";
 import SendMailPage from "./pages/sendMailPage";
 import SentMailPage from "./pages/sentMailPage";
 import ReceivedMailPage from "./pages/receivedMailPage";
+import SentMailDetailsPage from "./pages/sentMailDetailsPage";
+import ReceivedMailDetailsPage from "./pages/receivedMailDetailsPage";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/send-mail" element={<SendMailPage />} />
         <Route path="/sent-mail" element={<SentMailPage />} />
         <Route path="/received-mail" element={<ReceivedMailPage />} />
+        <Route path="/sent-mail/:emailId" element={<SentMailDetailsPage />} />
+        <Route path="/received-mail/:emailId" element={<ReceivedMailDetailsPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -9,7 +9,7 @@ const MailList = ({ mails, type, onMailClick }) => {
         <ListGroup.Item
           key={mail.emailId}
           className={`mail-item ${mail.isSeen ? "seen" : "unseen"}`}
-          onClick={() => onMailClick(mail.id)}
+          onClick={() => onMailClick(mail.emailId)}
         >
           <Row className="align-items-center">
             <Col xs={1} className="mail-status">

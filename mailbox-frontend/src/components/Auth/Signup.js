@@ -46,7 +46,7 @@ const Signup = () => {
     emailRef.current.value = "";
     passwordRef.current.value = "";
     cnfPasswordRef.current.value = "";
-    // navigate("/dashboard");
+    navigate("/received-mail");
   };
 
   return (
