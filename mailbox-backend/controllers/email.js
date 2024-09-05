@@ -60,6 +60,7 @@ const getSentEmails = async (req, res) => {
       to: email.Recipients.map(
         (recipient) => recipient.RecipientUser.name
       ).join(", "),
+      isSeen: email.isSeen,
       date: moment.tz(email.createdAt, "Asia/Kolkata").format("DD/MM/YY"),
       time: moment.tz(email.createdAt, "Asia/Kolkata").format("hh:mm A"),
     }));
@@ -87,6 +88,7 @@ const getReceivedEmails = async (req, res) => {
       ],
       attributes: ["emailId", "isSeen" , "createdAt"],
     });
+    
 
     const emails = receivedEmails.map((recipient) => ({
       emailId: recipient.emailId,
@@ -109,7 +111,7 @@ const getReceivedEmailDetails = async (req, res) => {
 
   try {
     const email = await Email.findOne({
-      where: { id: emailId, isDeleted: false },
+      where: { id: emailId },
       include: [
         {
           model: User,
@@ -119,6 +121,7 @@ const getReceivedEmailDetails = async (req, res) => {
         {
           model: Recipient,
           as: "Recipients",
+          where: {isDeleted: false},
           include: {
             model: User,
             as: "RecipientUser",
@@ -206,6 +209,9 @@ const getSentEmailDetails = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Email not found" });
     }
+
+    email.isSeen = true;
+    await email.save();
 
     const sender = {
       name: email.Sender.name,

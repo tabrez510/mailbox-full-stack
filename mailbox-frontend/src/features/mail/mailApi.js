@@ -21,9 +21,9 @@ api.interceptors.request.use((config) => {
     return config;
 })
 
-export const sendMail = (mail) => axios.post('/send', mail);
-export const fetchSentMails = () => axios.get('/sent');
-export const fetchReceivedMails = () => axios.get('/received');
-export const getSentMailDetails = (emailId) => axios.get(`/sent/${emailId}`); 
-export const getReceivedMailDetails = (emailId) => axios.get(`/received/${emailId}`);
-export const deleteMail = (emailId) => axios.delete(`/delete/${emailId}`);
+export const sendMail = (mail) => api.post('/send', mail);
+export const fetchSentMails = () => api.get('/sent');
+export const fetchReceivedMails = () => api.get('/received');
+export const getSentMailDetails = (emailId) => api.get(`/sent/${emailId}`); 
+export const getReceivedMailDetails = (emailId) => api.get(`/received/${emailId}`);
+export const deleteMail = (emailId) => api.delete(`/delete/${emailId}`);

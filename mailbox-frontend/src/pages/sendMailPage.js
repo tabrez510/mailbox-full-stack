@@ -1,7 +1,7 @@
 import SendMail from "../components/Mail/SendMail";
 import SideNavbar from "../components/Navbar/SideNavbar";
 
-const sendMail = () => {
+const SendMailPage = () => {
   return (
     <>
       <SideNavbar />
@@ -10,4 +10,4 @@ const sendMail = () => {
   );
 };
 
-export default sendMail;
+export default SendMailPage;

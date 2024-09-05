@@ -21,6 +21,10 @@ const Email = sequelize.define("email", {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  isSeen: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

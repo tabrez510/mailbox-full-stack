@@ -25,8 +25,8 @@ export const fetchSentMailsAction = createAsyncThunk(
   "mail/fetchSentMails",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await fetchSentMails();
-      return data;
+      const res = await fetchSentMails();
+      return res.data.emails;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -37,8 +37,8 @@ export const fetchReceivedMailsAction = createAsyncThunk(
   "mail/fetchReceivedMails",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await fetchReceivedMails();
-      return data;
+      const res = await fetchReceivedMails();
+      return res.data.emails;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -47,7 +47,7 @@ export const fetchReceivedMailsAction = createAsyncThunk(
 
 export const getReceivedMailDetailsAction = createAsyncThunk(
   "mail/getReceivedMailDetails",
-  async ({ emailId, userId }, { rejectWithValue }) => {
+  async ({ emailId }, { rejectWithValue }) => {
     try {
       const data = await getReceivedMailDetails(emailId);
       return data;
@@ -59,7 +59,7 @@ export const getReceivedMailDetailsAction = createAsyncThunk(
 
 export const getSentMailDetailsAction = createAsyncThunk(
   "mail/getSentMailDetails",
-  async ({ emailId, userId }, { rejectWithValue }) => {
+  async ({ emailId }, { rejectWithValue }) => {
     try {
       const data = await getSentMailDetails(emailId);
       return data;
